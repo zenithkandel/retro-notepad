@@ -51,15 +51,14 @@
       
       if(p.fontFamily){
         fontFamily.value = p.fontFamily;
-        pendingFormat.fontFamily = p.fontFamily;
+        editor.style.fontFamily = p.fontFamily;
       }
       if(p.fontSize){
         fontSize.value = p.fontSize;
-        pendingFormat.fontSize = p.fontSize;
+        editor.style.fontSize = p.fontSize + 'px';
       }
       if(p.color){
         colorPicker.value = p.color;
-        pendingFormat.color = p.color;
       }
     }catch(e){console.warn('prefs load', e)}
   }
@@ -104,114 +103,45 @@
 		updateToolbarState();
 	}));
 
-  // MS Word-style formatting state
-  let pendingFormat = {
-    fontFamily: null,
-    fontSize: null,
-    color: null
-  };
-
-  // Apply formatting to selection or set pending format
-  function applyFormat(type, value){
-    const selection = window.getSelection();
-    
-    if(selection && selection.toString().length > 0){
-      // Has selection - apply formatting to selected text
-      const range = selection.getRangeAt(0);
-      const span = document.createElement('span');
-      
-      // Apply the specific formatting
-      if(type === 'fontFamily') span.style.fontFamily = value;
-      if(type === 'fontSize') span.style.fontSize = value + 'px';
-      if(type === 'color') span.style.color = value;
-      
-      // Wrap selection
-      try{
-        const contents = range.extractContents();
-        span.appendChild(contents);
-        range.insertNode(span);
-        
-        // Restore selection
-        const newRange = document.createRange();
-        newRange.selectNodeContents(span);
-        selection.removeAllRanges();
-        selection.addRange(newRange);
-      }catch(err){
-        console.warn('Format apply error:', err);
-      }
-    } else {
-      // No selection - set pending format for next typed text
-      pendingFormat[type] = value;
-    }
-    
-    editor.focus();
-  }
-
-  // Listen for typing to apply pending formats
-  let formatApplied = false;
-  editor.addEventListener('keypress', (e) => {
-    // Check if we have pending formats and haven't applied them yet
-    if(!formatApplied && (pendingFormat.fontFamily || pendingFormat.fontSize || pendingFormat.color)){
-      const selection = window.getSelection();
-      if(selection.rangeCount > 0){
-        const range = selection.getRangeAt(0);
-        
-        // Create span with pending formats
-        const span = document.createElement('span');
-        if(pendingFormat.fontFamily) span.style.fontFamily = pendingFormat.fontFamily;
-        if(pendingFormat.fontSize) span.style.fontSize = pendingFormat.fontSize + 'px';
-        if(pendingFormat.color) span.style.color = pendingFormat.color;
-        
-        // Insert a zero-width space to anchor the span
-        span.appendChild(document.createTextNode('\u200B'));
-        
-        try{
-          range.insertNode(span);
-          
-          // Move cursor inside the span
-          range.setStart(span.firstChild, 1);
-          range.setEnd(span.firstChild, 1);
-          selection.removeAllRanges();
-          selection.addRange(range);
-          
-          formatApplied = true;
-          
-          // Clear pending after a short delay
-          setTimeout(() => {
-            formatApplied = false;
-          }, 100);
-        }catch(err){
-          console.warn('Pending format error:', err);
-        }
-      }
-    }
-  });
-
-  // Reset pending format when user clicks elsewhere or selects text
-  editor.addEventListener('mouseup', () => {
-    const selection = window.getSelection();
-    if(selection && selection.toString().length > 0){
-      // Clear pending when selecting text
-      pendingFormat = { fontFamily: null, fontSize: null, color: null };
-    }
-  });
-
-  // Font Family change
+  // Font Family - MS Word style
   fontFamily.addEventListener('change', (e) => {
-    applyFormat('fontFamily', e.target.value);
+    const value = e.target.value;
+    document.execCommand('fontName', false, value);
     savePrefs();
+    editor.focus();
   });
 
-  // Font Size change
+  // Font Size - MS Word style
   fontSize.addEventListener('change', (e) => {
-    applyFormat('fontSize', e.target.value);
+    const value = e.target.value;
+    const sel = window.getSelection();
+    
+    if(sel.rangeCount > 0 && sel.toString().length > 0){
+      // Has selection - apply to selection
+      document.execCommand('fontSize', false, '7');
+      
+      // Replace all font tags with spans having proper size
+      const fontTags = editor.querySelectorAll('font[size="7"]');
+      fontTags.forEach(font => {
+        const span = document.createElement('span');
+        span.style.fontSize = value + 'px';
+        span.innerHTML = font.innerHTML;
+        font.parentNode.replaceChild(span, font);
+      });
+    } else {
+      // No selection - set base editor font size
+      editor.style.fontSize = value + 'px';
+    }
+    
     savePrefs();
+    editor.focus();
   });
 
-  // Color change
+  // Color - MS Word style
   colorPicker.addEventListener('input', (e) => {
-    applyFormat('color', e.target.value);
+    document.execCommand('foreColor', false, e.target.value);
     savePrefs();
+    editor.focus();
   });	// Save / Clear
 	saveBtn.addEventListener('click', () => {
 		localStorage.setItem(STORAGE_KEY, editor.innerHTML);
