@@ -1,10 +1,7 @@
-// Enhanced editor behavior for Retro Notepad with preferences and themes
+// Enhanced editor behavior for Retro Notepad with themes
 (() => {
   const editor = document.getElementById('editor');
   const tools = document.querySelectorAll('.tool[data-cmd]');
-  const colorPicker = document.getElementById('colorPicker');
-  const fontSize = document.getElementById('fontSize');
-  const fontFamily = document.getElementById('fontFamily');
   const saveBtn = document.getElementById('saveBtn');
   const clearBtn = document.getElementById('clearBtn');
   const themeBtn = document.getElementById('themeBtn');
@@ -12,7 +9,6 @@
   const themeOptions = document.querySelectorAll('.theme-option');
   const status = document.getElementById('status');
   const STORAGE_KEY = 'retro-notes-content-v1';
-  const PREFS_KEY = 'retro-notes-prefs-v1';
   const THEME_KEY = 'retro-notes-theme-v1';	// Ensure styleWithCSS so font color/sizing uses inline styles
 	document.execCommand('styleWithCSS', false, true);
 
@@ -42,35 +38,7 @@
     });
   }
 
-  // Preferences handling
-  function loadPrefs(){
-    try{
-      const raw = localStorage.getItem(PREFS_KEY);
-      if(!raw) return;
-      const p = JSON.parse(raw);
-      
-      if(p.fontFamily){
-        fontFamily.value = p.fontFamily;
-        editor.style.fontFamily = p.fontFamily;
-      }
-      if(p.fontSize){
-        fontSize.value = p.fontSize;
-        editor.style.fontSize = p.fontSize + 'px';
-      }
-      if(p.color){
-        colorPicker.value = p.color;
-      }
-    }catch(e){console.warn('prefs load', e)}
-  }
 
-  function savePrefs(){
-    const p = { 
-      fontFamily: fontFamily.value, 
-      fontSize: fontSize.value, 
-      color: colorPicker.value 
-    };
-    localStorage.setItem(PREFS_KEY, JSON.stringify(p));
-  }
 
   // Theme button click
   themeBtn.addEventListener('click', () => {
@@ -103,45 +71,7 @@
 		updateToolbarState();
 	}));
 
-  // Font Family - MS Word style
-  fontFamily.addEventListener('change', (e) => {
-    const value = e.target.value;
-    document.execCommand('fontName', false, value);
-    savePrefs();
-    editor.focus();
-  });
-
-  // Font Size - MS Word style
-  fontSize.addEventListener('change', (e) => {
-    const value = e.target.value;
-    
-    // Use inline style approach with execCommand
-    document.execCommand('fontSize', false, '7');
-    
-    // Immediately replace font tags with proper pixel sizes
-    const fontTags = editor.querySelectorAll('font[size="7"]');
-    fontTags.forEach(font => {
-      const span = document.createElement('span');
-      span.style.fontSize = value + 'px';
-      while(font.firstChild){
-        span.appendChild(font.firstChild);
-      }
-      font.parentNode.replaceChild(span, font);
-    });
-    
-    // Also set base editor font size for new unformatted text
-    editor.style.fontSize = value + 'px';
-    
-    savePrefs();
-    editor.focus();
-  });
-
-  // Color - MS Word style
-  colorPicker.addEventListener('input', (e) => {
-    document.execCommand('foreColor', false, e.target.value);
-    savePrefs();
-    editor.focus();
-  });	// Save / Clear
+	// Save / Clear
 	saveBtn.addEventListener('click', () => {
 		localStorage.setItem(STORAGE_KEY, editor.innerHTML);
 		updateStatus('saved');
@@ -166,12 +96,11 @@
 		}, 900);
 	});
 
-  // Load content, prefs, and theme
+  // Load content and theme
   window.addEventListener('DOMContentLoaded', () => {
     loadTheme();
     const saved = localStorage.getItem(STORAGE_KEY);
     if(saved) editor.innerHTML = saved;
-    loadPrefs();
     updateToolbarState();
   });
 
