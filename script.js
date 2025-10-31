@@ -96,70 +96,115 @@
 		updateToolbarState();
 	}));
 
-	// Color change
-	colorPicker.addEventListener('input', (e) => {
-		document.execCommand('foreColor', false, e.target.value);
-		savePrefs();
-		editor.focus();
-	});
+  // MS Word-style formatting state
+  let pendingFormat = {
+    fontFamily: null,
+    fontSize: null,
+    color: null
+  };
 
-	// Font family change
-	fontFamily.addEventListener('change', (e) => {
-		editor.style.fontFamily = e.target.value;
-		savePrefs();
-		editor.focus();
-	});
+  // Apply formatting to selection or set pending format
+  function applyFormat(type, value){
+    const selection = window.getSelection();
+    
+    if(selection && selection.toString().length > 0){
+      // Has selection - apply formatting to selected text
+      const range = selection.getRangeAt(0);
+      const span = document.createElement('span');
+      
+      // Apply the specific formatting
+      if(type === 'fontFamily') span.style.fontFamily = value;
+      if(type === 'fontSize') span.style.fontSize = value + 'px';
+      if(type === 'color') span.style.color = value;
+      
+      // Wrap selection
+      try{
+        const contents = range.extractContents();
+        span.appendChild(contents);
+        range.insertNode(span);
+        
+        // Restore selection
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }catch(err){
+        console.warn('Format apply error:', err);
+      }
+    } else {
+      // No selection - set pending format for next typed text
+      pendingFormat[type] = value;
+    }
+    
+    editor.focus();
+  }
 
-	// Font size handler
-	fontSize.addEventListener('change', (e) => {
-		const size = e.target.value + 'px';
-		const selection = window.getSelection();
-		
-		// Check if there's selected text
-		if(selection && selection.toString().length > 0){
-			// Apply to selected text only
-			const range = selection.getRangeAt(0);
-			const span = document.createElement('span');
-			span.style.fontSize = size;
-			
-			try{
-				// Wrap selected content in span
-				span.appendChild(range.extractContents());
-				range.insertNode(span);
-				
-				// Clean up: merge with parent if parent already has fontSize
-				if(span.parentNode && span.parentNode !== editor){
-					const parent = span.parentNode;
-					if(parent.style && parent.style.fontSize){
-						// Parent already has fontSize, replace it
-						parent.style.fontSize = size;
-						// Move span contents to parent
-						while(span.firstChild){
-							parent.insertBefore(span.firstChild, span);
-						}
-						parent.removeChild(span);
-					}
-				}
-				
-				// Restore selection
-				selection.removeAllRanges();
-				const newRange = document.createRange();
-				newRange.selectNodeContents(span.parentNode ? span : editor);
-				newRange.collapse(false);
-				selection.addRange(newRange);
-			}catch(err){
-				console.warn('fontSize selection error:', err);
-			}
-		} else {
-			// No selection - set default font size for editor (affects new text)
-			editor.style.fontSize = size;
-		}
-		
-		savePrefs();
-		editor.focus();
-	});
+  // Listen for typing to apply pending formats
+  let formatApplied = false;
+  editor.addEventListener('keypress', (e) => {
+    // Check if we have pending formats and haven't applied them yet
+    if(!formatApplied && (pendingFormat.fontFamily || pendingFormat.fontSize || pendingFormat.color)){
+      const selection = window.getSelection();
+      if(selection.rangeCount > 0){
+        const range = selection.getRangeAt(0);
+        
+        // Create span with pending formats
+        const span = document.createElement('span');
+        if(pendingFormat.fontFamily) span.style.fontFamily = pendingFormat.fontFamily;
+        if(pendingFormat.fontSize) span.style.fontSize = pendingFormat.fontSize + 'px';
+        if(pendingFormat.color) span.style.color = pendingFormat.color;
+        
+        // Insert a zero-width space to anchor the span
+        span.appendChild(document.createTextNode('\u200B'));
+        
+        try{
+          range.insertNode(span);
+          
+          // Move cursor inside the span
+          range.setStart(span.firstChild, 1);
+          range.setEnd(span.firstChild, 1);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          
+          formatApplied = true;
+          
+          // Clear pending after a short delay
+          setTimeout(() => {
+            formatApplied = false;
+          }, 100);
+        }catch(err){
+          console.warn('Pending format error:', err);
+        }
+      }
+    }
+  });
 
-	// Save / Clear
+  // Reset pending format when user clicks elsewhere or selects text
+  editor.addEventListener('mouseup', () => {
+    const selection = window.getSelection();
+    if(selection && selection.toString().length > 0){
+      // Clear pending when selecting text
+      pendingFormat = { fontFamily: null, fontSize: null, color: null };
+    }
+  });
+
+  // Font Family change
+  fontFamily.addEventListener('change', (e) => {
+    applyFormat('fontFamily', e.target.value);
+    savePrefs();
+  });
+
+  // Font Size change
+  fontSize.addEventListener('change', (e) => {
+    applyFormat('fontSize', e.target.value);
+    savePrefs();
+  });
+
+  // Color change
+  colorPicker.addEventListener('input', (e) => {
+    applyFormat('color', e.target.value);
+    savePrefs();
+  });	// Save / Clear
 	saveBtn.addEventListener('click', () => {
 		localStorage.setItem(STORAGE_KEY, editor.innerHTML);
 		updateStatus('saved');
