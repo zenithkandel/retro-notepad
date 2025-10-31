@@ -48,20 +48,28 @@
       const raw = localStorage.getItem(PREFS_KEY);
       if(!raw) return;
       const p = JSON.parse(raw);
+      
       if(p.fontFamily){
-        editor.style.fontFamily = p.fontFamily;
         fontFamily.value = p.fontFamily;
+        pendingFormat.fontFamily = p.fontFamily;
       }
       if(p.fontSize){
         fontSize.value = p.fontSize;
-        editor.style.fontSize = p.fontSize + 'px';
+        pendingFormat.fontSize = p.fontSize;
       }
-      if(p.color) colorPicker.value = p.color;
+      if(p.color){
+        colorPicker.value = p.color;
+        pendingFormat.color = p.color;
+      }
     }catch(e){console.warn('prefs load', e)}
   }
 
   function savePrefs(){
-    const p = { fontFamily: fontFamily.value, fontSize: fontSize.value, color: colorPicker.value };
+    const p = { 
+      fontFamily: fontFamily.value, 
+      fontSize: fontSize.value, 
+      color: colorPicker.value 
+    };
     localStorage.setItem(PREFS_KEY, JSON.stringify(p));
   }
 
