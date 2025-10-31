@@ -223,17 +223,19 @@
 
 
 
-  // Theme button click
-  themeBtn.addEventListener('click', () => {
-    themeModal.style.display = 'flex';
-  });
+	// Theme button click (animated open)
+	themeBtn.addEventListener('click', () => {
+		themeModal.style.display = 'flex';
+		requestAnimationFrame(() => themeModal.classList.add('open'));
+	});
 
-  // Close modal on background click
-  themeModal.addEventListener('click', (e) => {
-    if(e.target === themeModal){
-      themeModal.style.display = 'none';
-    }
-  });
+	// Close modal on background click (animated close)
+	themeModal.addEventListener('click', (e) => {
+		if(e.target === themeModal){
+			themeModal.classList.remove('open');
+			themeModal.addEventListener('transitionend', () => { themeModal.style.display = 'none'; }, { once:true });
+		}
+	});
 
   // Theme selection
   themeOptions.forEach(opt => {
@@ -297,9 +299,23 @@
 		
 		if((e.ctrlKey || e.metaKey) && !e.shiftKey){
 			const k = e.key.toLowerCase();
-			if(k === 'b'){ e.preventDefault(); document.execCommand('bold'); }
-			if(k === 'i'){ e.preventDefault(); document.execCommand('italic'); }
-			if(k === 'u'){ e.preventDefault(); document.execCommand('underline'); }
+			const sel = window.getSelection();
+			const collapsed = !!(sel && sel.rangeCount && sel.getRangeAt(0).collapsed);
+			if(k === 'b'){
+				e.preventDefault();
+				if(collapsed){ pending.bold = !pending.bold; if(boldBtn) boldBtn.classList.toggle('active', pending.bold); resetTypingSpan(); }
+				else { document.execCommand('bold'); }
+			}
+			if(k === 'i'){
+				e.preventDefault();
+				if(collapsed){ pending.italic = !pending.italic; if(italicBtn) italicBtn.classList.toggle('active', pending.italic); resetTypingSpan(); }
+				else { document.execCommand('italic'); }
+			}
+			if(k === 'u'){
+				e.preventDefault();
+				if(collapsed){ pending.underline = !pending.underline; if(underlineBtn) underlineBtn.classList.toggle('active', pending.underline); resetTypingSpan(); }
+				else { document.execCommand('underline'); }
+			}
 		}
 	});
 
@@ -310,7 +326,8 @@
 		function updateToolbarState(){
 			const sel = window.getSelection();
 			const collapsed = !!(sel && sel.rangeCount && sel.getRangeAt(0).collapsed);
-			tools.forEach(btn => {
+			const btns = document.querySelectorAll('.tool[data-cmd]');
+			btns.forEach(btn => {
 				const cmd = btn.dataset.cmd;
 				try{
 					const active = document.queryCommandState(cmd);
