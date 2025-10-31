@@ -24,16 +24,24 @@
 					<button class="tool" data-cmd="insertHorizontalRule" title="Horizontal line"><i class="fa-solid fa-minus"></i></button>
 				</div>
 
-				<div class="center">
-					<select id="fontSize" title="Font size">
-						<option value="14">Small</option>
-						<option value="16" selected>Normal</option>
-						<option value="18">Large</option>
-						<option value="22">XL</option>
-					</select>
+						<div class="center">
+							<select id="fontFamily" title="Font family">
+								<option value="'Courier New', Courier, monospace">Courier</option>
+								<option value="'Roboto Mono', monospace">Roboto Mono</option>
+								<option value="Georgia, serif">Georgia</option>
+								<option value="'Times New Roman', Times, serif">Times</option>
+								<option value="'Consolas', monospace">Consolas</option>
+							</select>
 
-					<input id="colorPicker" type="color" title="Font color" value="#b8e986">
-				</div>
+							<select id="fontSize" title="Font size">
+								<option value="14">Small</option>
+								<option value="16" selected>Normal</option>
+								<option value="18">Large</option>
+								<option value="22">XL</option>
+							</select>
+
+							<input id="colorPicker" type="color" title="Font color" value="#b8e986">
+						</div>
 
 				<div class="right">
 					<button class="tool" id="clearBtn" title="Clear"><i class="fa-solid fa-trash"></i></button>
@@ -48,5 +56,12 @@
 
 			<footer class="status">Autosave: <span id="status">idle</span></footer>
 		</div>
+
+				<!-- Custom minimal cursor -->
+				<div id="custom-cursor" aria-hidden="true">
+					<div class="cursor-ring"></div>
+					<div class="cursor-dot"></div>
+					<div id="cursor-label" class="cursor-label"></div>
+				</div>
 	</body>
 </html>
