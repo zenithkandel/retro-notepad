@@ -114,24 +114,23 @@
   // Font Size - MS Word style
   fontSize.addEventListener('change', (e) => {
     const value = e.target.value;
-    const sel = window.getSelection();
     
-    if(sel.rangeCount > 0 && sel.toString().length > 0){
-      // Has selection - apply to selection
-      document.execCommand('fontSize', false, '7');
-      
-      // Replace all font tags with spans having proper size
-      const fontTags = editor.querySelectorAll('font[size="7"]');
-      fontTags.forEach(font => {
-        const span = document.createElement('span');
-        span.style.fontSize = value + 'px';
-        span.innerHTML = font.innerHTML;
-        font.parentNode.replaceChild(span, font);
-      });
-    } else {
-      // No selection - set base editor font size
-      editor.style.fontSize = value + 'px';
-    }
+    // Use inline style approach with execCommand
+    document.execCommand('fontSize', false, '7');
+    
+    // Immediately replace font tags with proper pixel sizes
+    const fontTags = editor.querySelectorAll('font[size="7"]');
+    fontTags.forEach(font => {
+      const span = document.createElement('span');
+      span.style.fontSize = value + 'px';
+      while(font.firstChild){
+        span.appendChild(font.firstChild);
+      }
+      font.parentNode.replaceChild(span, font);
+    });
+    
+    // Also set base editor font size for new unformatted text
+    editor.style.fontSize = value + 'px';
     
     savePrefs();
     editor.focus();
