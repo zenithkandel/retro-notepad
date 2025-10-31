@@ -48,13 +48,15 @@
       const raw = localStorage.getItem(PREFS_KEY);
       if(!raw) return;
       const p = JSON.parse(raw);
-      if(p.fontFamily) editor.style.fontFamily = p.fontFamily;
+      if(p.fontFamily){
+        editor.style.fontFamily = p.fontFamily;
+        fontFamily.value = p.fontFamily;
+      }
       if(p.fontSize){
         fontSize.value = p.fontSize;
-        applyFontSizeValue(p.fontSize);
+        editor.style.fontSize = p.fontSize + 'px';
       }
       if(p.color) colorPicker.value = p.color;
-      if(p.fontFamily) fontFamily.value = p.fontFamily;
     }catch(e){console.warn('prefs load', e)}
   }
 
@@ -108,36 +110,51 @@
 		editor.focus();
 	});
 
-	// Font size: we use execCommand with fontSize then normalize <font> to inline style
-	const sizeMap = { '10':'12px','12':'13px','14':'14px','16':'16px','18':'18px','22':'22px' };
-	function normalizeFontTags(){
-		const fonts = editor.querySelectorAll('font');
-		fonts.forEach(f => {
-			const sz = f.getAttribute('size');
-			const px = sizeMap[sz] || null;
-			const span = document.createElement('span');
-			if(px) span.style.fontSize = px;
-			span.innerHTML = f.innerHTML;
-			f.parentNode.replaceChild(span, f);
-		});
-	}
-
-	function applyFontSizeValue(value){
-		// set editor base font-size for content (affects plain text not styled segments)
-		editor.style.fontSize = value + 'px';
-	}
-
+	// Font size handler
 	fontSize.addEventListener('change', (e) => {
-		const px = e.target.value;
-		// try to change selection size if something selected
-		document.execCommand('fontSize', false, 7);
-		const fonts = editor.querySelectorAll('font');
-		fonts.forEach(f => {
-			f.removeAttribute('size');
-			f.style.fontSize = px + 'px';
-		});
-		normalizeFontTags();
-		applyFontSizeValue(px);
+		const size = e.target.value + 'px';
+		const selection = window.getSelection();
+		
+		// Check if there's selected text
+		if(selection && selection.toString().length > 0){
+			// Apply to selected text only
+			const range = selection.getRangeAt(0);
+			const span = document.createElement('span');
+			span.style.fontSize = size;
+			
+			try{
+				// Wrap selected content in span
+				span.appendChild(range.extractContents());
+				range.insertNode(span);
+				
+				// Clean up: merge with parent if parent already has fontSize
+				if(span.parentNode && span.parentNode !== editor){
+					const parent = span.parentNode;
+					if(parent.style && parent.style.fontSize){
+						// Parent already has fontSize, replace it
+						parent.style.fontSize = size;
+						// Move span contents to parent
+						while(span.firstChild){
+							parent.insertBefore(span.firstChild, span);
+						}
+						parent.removeChild(span);
+					}
+				}
+				
+				// Restore selection
+				selection.removeAllRanges();
+				const newRange = document.createRange();
+				newRange.selectNodeContents(span.parentNode ? span : editor);
+				newRange.collapse(false);
+				selection.addRange(newRange);
+			}catch(err){
+				console.warn('fontSize selection error:', err);
+			}
+		} else {
+			// No selection - set default font size for editor (affects new text)
+			editor.style.fontSize = size;
+		}
+		
 		savePrefs();
 		editor.focus();
 	});
