@@ -19,13 +19,15 @@ A minimalistic, dark-themed retro aesthetic notepad with rich text editing featu
 - **Preferences**: All settings saved to localStorage
 
 ### UI/UX
-- Dark retro aesthetic with soft neon green accents
+- **6 Theme Options**: Cyber Purple, Neon Blue, Retro Orange, Matrix Green, Hot Pink, Mint Fresh
+- Dark retro aesthetic with customizable accent colors
 - Smooth animations and transitions
 - Custom-styled dropdowns with arrow indicators
 - Toolbar button active states
 - Autosave every 900ms
 - Manual save and clear options
 - Responsive design
+- Theme switcher with live preview
 
 ### Storage
 - Content autosaved to localStorage
@@ -68,6 +70,7 @@ Works in all modern browsers that support:
 - `Ctrl+B` — Bold
 - `Ctrl+I` — Italic
 - `Ctrl+U` — Underline
+- `Escape` — Close theme selector
 
 ## 🎯 Future Enhancements
 

@@ -23,28 +23,66 @@
 		}
 	}
 
-	// Preferences handling
-	function loadPrefs(){
-		try{
-			const raw = localStorage.getItem(PREFS_KEY);
-			if(!raw) return;
-			const p = JSON.parse(raw);
-			if(p.fontFamily) editor.style.fontFamily = p.fontFamily;
-			if(p.fontSize){
-				fontSize.value = p.fontSize;
-				applyFontSizeValue(p.fontSize);
-			}
-			if(p.color) colorPicker.value = p.color;
-			if(p.fontFamily) fontFamily.value = p.fontFamily;
-		}catch(e){console.warn('prefs load', e)}
-	}
+  // Theme handling
+  function loadTheme(){
+    const savedTheme = localStorage.getItem(THEME_KEY) || 'cyber-purple';
+    applyTheme(savedTheme);
+  }
 
-	function savePrefs(){
-		const p = { fontFamily: fontFamily.value, fontSize: fontSize.value, color: colorPicker.value };
-		localStorage.setItem(PREFS_KEY, JSON.stringify(p));
-	}
+  function applyTheme(themeName){
+    document.body.setAttribute('data-theme', themeName);
+    localStorage.setItem(THEME_KEY, themeName);
+    // Update active state
+    themeOptions.forEach(opt => {
+      if(opt.dataset.theme === themeName){
+        opt.classList.add('active');
+      } else {
+        opt.classList.remove('active');
+      }
+    });
+  }
 
-	// Toolbar actions
+  // Preferences handling
+  function loadPrefs(){
+    try{
+      const raw = localStorage.getItem(PREFS_KEY);
+      if(!raw) return;
+      const p = JSON.parse(raw);
+      if(p.fontFamily) editor.style.fontFamily = p.fontFamily;
+      if(p.fontSize){
+        fontSize.value = p.fontSize;
+        applyFontSizeValue(p.fontSize);
+      }
+      if(p.color) colorPicker.value = p.color;
+      if(p.fontFamily) fontFamily.value = p.fontFamily;
+    }catch(e){console.warn('prefs load', e)}
+  }
+
+  function savePrefs(){
+    const p = { fontFamily: fontFamily.value, fontSize: fontSize.value, color: colorPicker.value };
+    localStorage.setItem(PREFS_KEY, JSON.stringify(p));
+  }
+
+  // Theme button click
+  themeBtn.addEventListener('click', () => {
+    themeModal.style.display = 'flex';
+  });
+
+  // Close modal on background click
+  themeModal.addEventListener('click', (e) => {
+    if(e.target === themeModal){
+      themeModal.style.display = 'none';
+    }
+  });
+
+  // Theme selection
+  themeOptions.forEach(opt => {
+    opt.addEventListener('click', () => {
+      const theme = opt.dataset.theme;
+      applyTheme(theme);
+      themeModal.style.display = 'none';
+    });
+  });	// Toolbar actions
 	tools.forEach(btn => btn.addEventListener('click', (e) => {
 		const cmd = btn.dataset.cmd;
 		if(cmd === 'insertHorizontalRule'){
@@ -129,16 +167,23 @@
 		}, 900);
 	});
 
-	// Load content and prefs
-	window.addEventListener('DOMContentLoaded', () => {
-		const saved = localStorage.getItem(STORAGE_KEY);
-		if(saved) editor.innerHTML = saved;
-		loadPrefs();
-		updateToolbarState();
-	});
+  // Load content, prefs, and theme
+  window.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved) editor.innerHTML = saved;
+    loadPrefs();
+    updateToolbarState();
+  });
 
-	// Keyboard shortcuts (Ctrl+B/I/U)
+	// Keyboard shortcuts (Ctrl+B/I/U, Escape to close modal)
 	document.addEventListener('keydown', (e) => {
+		// Close modal with Escape
+		if(e.key === 'Escape' && themeModal.style.display === 'flex'){
+			themeModal.style.display = 'none';
+			return;
+		}
+		
 		if((e.ctrlKey || e.metaKey) && !e.shiftKey){
 			const k = e.key.toLowerCase();
 			if(k === 'b'){ e.preventDefault(); document.execCommand('bold'); }
