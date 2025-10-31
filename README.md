@@ -1,38 +1,37 @@
 # Retro Notepad — Dark Edition
 
-A minimalistic, dark-themed retro aesthetic notepad with rich text editing features. Built with vanilla HTML, CSS, and JavaScript.
+A sleek, dark-themed retro notepad with a modern, animated UI and Word‑like formatting behavior. Built with vanilla HTML, CSS, and JavaScript.
 
 ## ✨ Features
 
 ### Text Formatting
-- **Bold** (Ctrl+B)
-- **Italic** (Ctrl+I)
-- **Underline** (Ctrl+U)
-- Bullet lists
-- Numbered lists
-- Horizontal lines
+- Bold (Ctrl+B)
+- Italic (Ctrl+I)
+- Underline (Ctrl+U)
+- Bullet lists, Numbered lists
+- Horizontal rule
+- Word‑like behavior for fonts and styles:
+	- Selection: applies instantly to selected text
+	- Caret: sets a “pending” style so upcoming text uses your choice (font family, size, color, B/I/U)
 
 ### Customization
-- **11 Font Families**: Including Fira Code, JetBrains Mono, IBM Plex Mono, Source Code Pro, Space Mono, Roboto Mono, Courier New, Georgia, Merriweather, Times New Roman, and Consolas
-- **6 Font Sizes**: XS (12px) to XXL (24px)
-- **Color Picker**: Choose any text color
-- **Preferences**: All settings saved to localStorage
+- 11 Font Families: Fira Code, JetBrains Mono, IBM Plex Mono, Source Code Pro, Space Mono, Roboto Mono, Courier New, Georgia, Merriweather, Times New Roman, Consolas
+- 7 Font Sizes: 12, 14, 16, 18, 20, 24, 28
+- Color Picker for text color
+- Theme switcher with 6 curated themes
 
 ### UI/UX
-- **6 Theme Options**: Cyber Purple, Neon Blue, Retro Orange, Matrix Green, Hot Pink, Mint Fresh
-- Dark retro aesthetic with customizable accent colors
-- Smooth animations and transitions
-- Custom-styled dropdowns with arrow indicators
-- Toolbar button active states
-- Autosave every 900ms
-- Manual save and clear options
-- Responsive design
-- Theme switcher with live preview
+- 6 Themes: Cyber Purple, Neon Blue, Retro Orange, Matrix Green, Hot Pink, Mint Fresh
+- Modern micro‑interactions and tasteful animations (hover glow, active pulse, accent caret, selection highlight)
+- Animated theme modal open/close
+- Custom dropdowns and color picker pulse feedback
+- Autosave every 900ms + status flash; manual Save and Clear
+- Responsive and minimal by default; respects prefers‑reduced‑motion
 
 ### Storage
 - Content autosaved to localStorage
-- Preferences (font family, size, color) persisted across sessions
-- Clear button to reset content
+- Theme preference persisted
+- Clear button resets content
 
 ## 🚀 Quick Start
 
@@ -44,10 +43,10 @@ A minimalistic, dark-themed retro aesthetic notepad with rich text editing featu
 
 ## 🎨 Design
 
-- **Color Scheme**: Dark background (#071018) with neon green accents (#b8e986)
-- **Typography**: Monospace fonts for that retro coding feel
-- **Animations**: Smooth hover effects, active states, and transitions
-- **Layout**: Minimal, distraction-free interface
+- Dark retro base, neon accents via theme variables
+- Monospace‑forward typography for a nostalgic feel
+- Smooth hover/focus states, subtle depth, and clean motion
+- Minimal, distraction‑free layout that feels fast
 
 ## 📦 Tech Stack
 
@@ -59,10 +58,10 @@ A minimalistic, dark-themed retro aesthetic notepad with rich text editing featu
 
 ## 🔧 Browser Support
 
-Works in all modern browsers that support:
-- `contenteditable`
-- `document.execCommand` (for text formatting)
-- CSS Grid/Flexbox
+Modern browsers with:
+- `contenteditable`, Selection/Range API, `beforeinput`
+- `document.execCommand` (used for selection toggles)
+- CSS Flexbox/Grid, transitions
 - localStorage
 
 ## 📝 Keyboard Shortcuts
@@ -76,10 +75,13 @@ Works in all modern browsers that support:
 
 - Export as HTML/Markdown/Plain Text
 - Import files
-- Multiple themes
 - Find and replace
 - Word/character count
 - Undo/Redo history
+
+## 💬 Why this notepad?
+
+Let’s be honest: most notepads have forgettable, clunky, or just plain trash UI. This one focuses on a clean, modern, animated experience that feels great to use while staying lightweight and distraction‑free.
 
 ---
 

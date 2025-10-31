@@ -189,6 +189,14 @@
 			} else {
 				pending.color = val;
 			}
+			// pulse the color picker wrapper
+			const wrap = colorPicker.parentElement;
+			if(wrap){
+				wrap.classList.remove('pulse');
+				// force reflow to restart animation
+				void wrap.offsetWidth;
+				wrap.classList.add('pulse');
+			}
 			editor.focus();
 		};
 		colorPicker.addEventListener('input', applyColor);
@@ -246,8 +254,8 @@
   themeOptions.forEach(opt => {
     opt.addEventListener('click', () => {
       const theme = opt.dataset.theme;
-      applyTheme(theme);
-      themeModal.style.display = 'none';
+	applyTheme(theme);
+	closeThemeModalAnimated();
     });
   });	// Toolbar actions
 	tools.forEach(btn => btn.addEventListener('click', (e) => {
@@ -298,7 +306,7 @@
 	document.addEventListener('keydown', (e) => {
 		// Close modal with Escape
 		if(e.key === 'Escape' && themeModal.style.display === 'flex'){
-			themeModal.style.display = 'none';
+			closeThemeModalAnimated();
 			return;
 		}
 		
@@ -326,6 +334,18 @@
 
 	// Keep focus inside editor when clicking tools
 	document.querySelectorAll('.tool').forEach(t=>t.addEventListener('mousedown', e=>e.preventDefault()));
+
+	// Flash status on save
+	const statusSpan = status; // span element already selected as #status
+	const _origUpdateStatus = updateStatus;
+	function updateStatus(txt){
+		statusSpan.textContent = txt;
+		if(txt === 'saved'){
+			statusSpan.classList.add('flash');
+			setTimeout(()=> statusSpan.classList.remove('flash'), 500);
+			setTimeout(()=>{ if(statusSpan.textContent==='saved') statusSpan.textContent='idle' },900);
+		}
+	}
 
 		// Toolbar active state update
 		function updateToolbarState(){
