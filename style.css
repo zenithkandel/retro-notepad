@@ -37,6 +37,13 @@ body{
 	to{opacity:1;transform:translateY(0)}
 }
 .toolbar .left,.toolbar .center,.toolbar .right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tool-group{display:flex;gap:6px}
+.toolbar-separator{
+	width:1px;
+	height:24px;
+	background:linear-gradient(180deg, transparent, rgba(255,255,255,0.08), transparent);
+	margin:0 4px;
+}
 
 .tool{
 	background:transparent;
