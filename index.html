@@ -5,6 +5,11 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
 		<title>Retro Notepad — Dark</title>
 
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Merriweather:wght@400;700&family=Source+Code+Pro:wght@400;500&family=Space+Mono:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
 		<!-- FontAwesome (user-provided CDN lines trimmed to essential variants) -->
 		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.1.0/css/solid.css" defer media="print" onload="this.media='all'">
 		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.1.0/css/regular.css" defer media="print" onload="this.media='all'">
@@ -24,26 +29,41 @@
 					<button class="tool" data-cmd="insertHorizontalRule" title="Horizontal line"><i class="fa-solid fa-minus"></i></button>
 				</div>
 
-						<div class="center">
-							<select id="fontFamily" title="Font family">
-								<option value="'Courier New', Courier, monospace">Courier</option>
-								<option value="'Roboto Mono', monospace">Roboto Mono</option>
-								<option value="Georgia, serif">Georgia</option>
-								<option value="'Times New Roman', Times, serif">Times</option>
-								<option value="'Consolas', monospace">Consolas</option>
-							</select>
+				<div class="center">
+					<div class="custom-select-wrap">
+						<select id="fontFamily" class="custom-select" title="Font family">
+							<option value="'Courier New', Courier, monospace">Courier New</option>
+							<option value="'Fira Code', monospace">Fira Code</option>
+							<option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+							<option value="'IBM Plex Mono', monospace">IBM Plex Mono</option>
+							<option value="'Source Code Pro', monospace">Source Code Pro</option>
+							<option value="'Space Mono', monospace">Space Mono</option>
+							<option value="'Roboto Mono', monospace">Roboto Mono</option>
+							<option value="Georgia, serif">Georgia</option>
+							<option value="Merriweather, serif">Merriweather</option>
+							<option value="'Times New Roman', Times, serif">Times New Roman</option>
+							<option value="'Consolas', monospace">Consolas</option>
+						</select>
+						<i class="fa-solid fa-chevron-down select-arrow"></i>
+					</div>
 
-							<select id="fontSize" title="Font size">
-								<option value="14">Small</option>
-								<option value="16" selected>Normal</option>
-								<option value="18">Large</option>
-								<option value="22">XL</option>
-							</select>
+					<div class="custom-select-wrap">
+						<select id="fontSize" class="custom-select" title="Font size">
+							<option value="12">XS</option>
+							<option value="14">Small</option>
+							<option value="16" selected>Normal</option>
+							<option value="18">Large</option>
+							<option value="20">XL</option>
+							<option value="24">XXL</option>
+						</select>
+						<i class="fa-solid fa-chevron-down select-arrow"></i>
+					</div>
 
-							<input id="colorPicker" type="color" title="Font color" value="#b8e986">
-						</div>
-
-				<div class="right">
+					<div class="color-picker-wrap">
+						<input id="colorPicker" type="color" title="Font color" value="#b8e986">
+						<i class="fa-solid fa-palette"></i>
+					</div>
+				</div>				<div class="right">
 					<button class="tool" id="clearBtn" title="Clear"><i class="fa-solid fa-trash"></i></button>
 					<button class="tool" id="saveBtn" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
 				</div>
@@ -54,14 +74,7 @@
 				</div>
 			</main>
 
-			<footer class="status">Autosave: <span id="status">idle</span></footer>
-		</div>
-
-				<!-- Custom minimal cursor -->
-				<div id="custom-cursor" aria-hidden="true">
-					<div class="cursor-ring"></div>
-					<div class="cursor-dot"></div>
-					<div id="cursor-label" class="cursor-label"></div>
-				</div>
+		<footer class="status">Autosave: <span id="status">idle</span></footer>
+	</div>
 	</body>
 </html>

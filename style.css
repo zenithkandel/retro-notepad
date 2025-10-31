@@ -29,13 +29,51 @@ body{
 .toolbar .left,.toolbar .center,.toolbar .right{display:flex;align-items:center;gap:8px}
 
 .tool{
-	background:transparent;border:1px solid transparent;padding:8px;border-radius:6px;color:var(--muted);cursor:pointer;font-size:16px;
+	background:transparent;
+	border:1px solid rgba(255,255,255,0.04);
+	padding:10px 14px;
+	border-radius:8px;
+	color:var(--muted);
+	cursor:pointer;
+	font-size:16px;
+	transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	position:relative;
+	overflow:hidden;
+}
+.tool::before{
+	content:'';
+	position:absolute;
+	top:50%;left:50%;
+	width:0;height:0;
+	border-radius:50%;
+	background:rgba(184,233,134,0.1);
+	transform:translate(-50%,-50%);
+	transition:width 0.4s ease, height 0.4s ease;
+}
+.tool:hover::before{
+	width:120%;
+	height:120%;
 }
 .tool:focus{outline:2px solid rgba(184,233,134,0.12)}
-.tool:hover{background:var(--glass);color:var(--accent)}
+.tool:hover{
+	background:rgba(184,233,134,0.04);
+	color:var(--accent);
+	border-color:rgba(184,233,134,0.12);
+	transform:translateY(-1px);
+	box-shadow:0 4px 12px rgba(184,233,134,0.08);
+}
+.tool:active{
+	transform:translateY(0);
+	box-shadow:0 2px 6px rgba(184,233,134,0.06);
+}
 
 /* active state for toolbar buttons */
-.tool.active{background:linear-gradient(90deg, rgba(184,233,134,0.06), rgba(184,233,134,0.02));color:var(--accent);border-color:rgba(184,233,134,0.08)}
+.tool.active{
+	background:linear-gradient(135deg, rgba(184,233,134,0.08), rgba(184,233,134,0.02));
+	color:var(--accent);
+	border-color:rgba(184,233,134,0.15);
+	box-shadow:inset 0 2px 8px rgba(184,233,134,0.05);
+}
 
 select#fontSize{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:6px;border-radius:6px}
 input[type=color]{width:36px;height:36px;border-radius:6px;border:none;padding:0;background:transparent;cursor:pointer}
