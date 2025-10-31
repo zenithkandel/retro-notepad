@@ -34,6 +34,9 @@ body{
 .tool:focus{outline:2px solid rgba(184,233,134,0.12)}
 .tool:hover{background:var(--glass);color:var(--accent)}
 
+/* active state for toolbar buttons */
+.tool.active{background:linear-gradient(90deg, rgba(184,233,134,0.06), rgba(184,233,134,0.02));color:var(--accent);border-color:rgba(184,233,134,0.08)}
+
 select#fontSize{background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);padding:6px;border-radius:6px}
 input[type=color]{width:36px;height:36px;border-radius:6px;border:none;padding:0;background:transparent;cursor:pointer}
 
