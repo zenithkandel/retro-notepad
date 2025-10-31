@@ -1,4 +1,4 @@
-// Enhanced editor behavior for Retro Notepad with preferences
+// Enhanced editor behavior for Retro Notepad with preferences and themes
 (() => {
   const editor = document.getElementById('editor');
   const tools = document.querySelectorAll('.tool[data-cmd]');
@@ -7,9 +7,13 @@
   const fontFamily = document.getElementById('fontFamily');
   const saveBtn = document.getElementById('saveBtn');
   const clearBtn = document.getElementById('clearBtn');
+  const themeBtn = document.getElementById('themeBtn');
+  const themeModal = document.getElementById('themeModal');
+  const themeOptions = document.querySelectorAll('.theme-option');
   const status = document.getElementById('status');
   const STORAGE_KEY = 'retro-notes-content-v1';
-  const PREFS_KEY = 'retro-notes-prefs-v1';	// Ensure styleWithCSS so font color/sizing uses inline styles
+  const PREFS_KEY = 'retro-notes-prefs-v1';
+  const THEME_KEY = 'retro-notes-theme-v1';	// Ensure styleWithCSS so font color/sizing uses inline styles
 	document.execCommand('styleWithCSS', false, true);
 
 	function updateStatus(txt){
