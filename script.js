@@ -221,6 +221,11 @@
     });
   }
 
+	function closeThemeModalAnimated(){
+		themeModal.classList.remove('open');
+		themeModal.addEventListener('transitionend', () => { themeModal.style.display = 'none'; }, { once:true });
+	}
+
 
 
 	// Theme button click (animated open)
