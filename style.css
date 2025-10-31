@@ -67,3 +67,18 @@ input[type=color]{width:36px;height:36px;border-radius:6px;border:none;padding:0
 .editor h1,.editor h2,.editor h3{color:var(--accent);}
 .editor a{color:#8be1ff}
 .editor ul{margin-left:1.25rem}
+
+/* Custom cursor styles */
+#custom-cursor{position:fixed;left:0;top:0;transform:translate3d(-50%,-50%,0);pointer-events:none;z-index:9999;mix-blend-mode:screen}
+#custom-cursor .cursor-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(184,233,134,0.9);transform:translate(-50%,-50%);position:absolute;left:0;top:0;transition:transform .12s ease, opacity .12s ease}
+#custom-cursor .cursor-ring{width:28px;height:28px;border-radius:50%;border:1px solid rgba(184,233,134,0.12);position:absolute;left:0;top:0;transform:translate(-50%,-50%);transition:transform .15s cubic-bezier(.2,.9,.3,1),opacity .15s}
+#custom-cursor .cursor-label{position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.6);color:var(--accent);padding:4px 6px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .12s}
+
+#custom-cursor.cursor--hover .cursor-ring{transform:translate(-50%,-50%) scale(1.25);border-color:rgba(184,233,134,0.25)}
+#custom-cursor.cursor--hover .cursor-dot{transform:translate(-50%,-50%) scale(1.05)}
+#custom-cursor.cursor--active .cursor-ring{transform:translate(-50%,-50%) scale(0.9);opacity:0.9}
+#custom-cursor.cursor--select .cursor-label{opacity:1}
+
+/* keep native text caret visible in editor */
+body{cursor:none}
+.editor{cursor:text}
