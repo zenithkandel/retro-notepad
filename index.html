@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1" />
+		<title>Retro Notepad — Dark</title>
+
+		<!-- FontAwesome (user-provided CDN lines trimmed to essential variants) -->
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.1.0/css/solid.css" defer media="print" onload="this.media='all'">
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.1.0/css/regular.css" defer media="print" onload="this.media='all'">
+		<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v7.1.0/css/brands.css" defer media="print" onload="this.media='all'">
+
+		<link rel="stylesheet" href="style.css">
+		<script src="script.js" defer></script>
+	</head>
+	<body>
+		<div class="app">
+			<header class="toolbar" role="toolbar" aria-label="Editor toolbar">
+				<div class="left">
+					<button class="tool" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+					<button class="tool" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+					<button class="tool" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+					<button class="tool" data-cmd="insertUnorderedList" title="Bullet list"><i class="fa-solid fa-list-ul"></i></button>
+					<button class="tool" data-cmd="insertHorizontalRule" title="Horizontal line"><i class="fa-solid fa-minus"></i></button>
+				</div>
+
+				<div class="center">
+					<select id="fontSize" title="Font size">
+						<option value="14">Small</option>
+						<option value="16" selected>Normal</option>
+						<option value="18">Large</option>
+						<option value="22">XL</option>
+					</select>
+
+					<input id="colorPicker" type="color" title="Font color" value="#b8e986">
+				</div>
+
+				<div class="right">
+					<button class="tool" id="clearBtn" title="Clear"><i class="fa-solid fa-trash"></i></button>
+					<button class="tool" id="saveBtn" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
+				</div>
+			</header>
+
+			<main class="editor-wrap">
+				<div id="editor" class="editor" contenteditable="true" spellcheck="true" aria-label="Notepad editor" data-placeholder="Start typing...">
+				</div>
+			</main>
+
+			<footer class="status">Autosave: <span id="status">idle</span></footer>
+		</div>
+	</body>
+</html>
