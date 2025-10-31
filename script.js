@@ -1,21 +1,15 @@
-// Minimal editor behavior for Retro Notepad with custom cursor and preferences
+// Enhanced editor behavior for Retro Notepad with preferences
 (() => {
-	const editor = document.getElementById('editor');
-	const tools = document.querySelectorAll('.tool[data-cmd]');
-	const colorPicker = document.getElementById('colorPicker');
-	const fontSize = document.getElementById('fontSize');
-	const fontFamily = document.getElementById('fontFamily');
-	const saveBtn = document.getElementById('saveBtn');
-	const clearBtn = document.getElementById('clearBtn');
-	const status = document.getElementById('status');
-	const STORAGE_KEY = 'retro-notes-content-v1';
-	const PREFS_KEY = 'retro-notes-prefs-v1';
-
-	// Cursor elements
-	const cursor = document.getElementById('custom-cursor');
-	const cursorLabel = document.getElementById('cursor-label');
-
-	// Ensure styleWithCSS so font color/sizing uses inline styles
+  const editor = document.getElementById('editor');
+  const tools = document.querySelectorAll('.tool[data-cmd]');
+  const colorPicker = document.getElementById('colorPicker');
+  const fontSize = document.getElementById('fontSize');
+  const fontFamily = document.getElementById('fontFamily');
+  const saveBtn = document.getElementById('saveBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const status = document.getElementById('status');
+  const STORAGE_KEY = 'retro-notes-content-v1';
+  const PREFS_KEY = 'retro-notes-prefs-v1';	// Ensure styleWithCSS so font color/sizing uses inline styles
 	document.execCommand('styleWithCSS', false, true);
 
 	function updateStatus(txt){
@@ -163,63 +157,14 @@
 		});
 	}
 
-	document.addEventListener('selectionchange', () => {
-		updateToolbarState();
-		updateSelectionInfo();
-	});
+  document.addEventListener('selectionchange', updateToolbarState);  document.addEventListener('keyup', updateToolbarState);
+  document.addEventListener('click', updateToolbarState);
 
-	document.addEventListener('keyup', updateToolbarState);
-	document.addEventListener('click', updateToolbarState);
-
-	// Selection info shown in cursor label
-	function updateSelectionInfo(){
-		const sel = window.getSelection();
-		if(!sel) return;
-		const text = sel.toString();
-		if(text.length > 0){
-			cursor.classList.add('cursor--select');
-			cursorLabel.textContent = `${text.length} selected`;
-		} else {
-			cursor.classList.remove('cursor--select');
-			cursorLabel.textContent = '';
-		}
-	}
-
-	// Custom cursor behavior
-	let mouseX = -9999, mouseY = -9999;
-	let rafId = null;
-	function onPointerMove(e){
-		mouseX = e.clientX;
-		mouseY = e.clientY;
-	}
-
-	function animateCursor(){
-		if(cursor){
-			cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
-		}
-		rafId = requestAnimationFrame(animateCursor);
-	}
-
-	// Hover detection for interactive elements
-	document.addEventListener('mouseover', (e) => {
-		const interactive = e.target.closest('button, a, select, input, .tool');
-		if(interactive) cursor.classList.add('cursor--hover');
-	});
-	document.addEventListener('mouseout', (e) => {
-		const related = e.relatedTarget;
-		// if leaving to another interactive element, keep hover
-		if(related && related.closest && related.closest('button, a, select, input, .tool')) return;
-		cursor.classList.remove('cursor--hover');
-	});
-
-	document.addEventListener('mousedown', (e) => { cursor.classList.add('cursor--active'); });
-	document.addEventListener('mouseup', (e) => { cursor.classList.remove('cursor--active'); });
-
-	document.addEventListener('pointermove', onPointerMove);
-	document.addEventListener('pointerleave', () => { cursor.style.opacity = 0; });
-	document.addEventListener('pointerenter', () => { cursor.style.opacity = 1; });
-
-	// Start cursor animation loop
-	animateCursor();
+  // Add smooth fade-in on load
+  window.addEventListener('load', () => {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.4s ease';
+    setTimeout(() => { document.body.style.opacity = '1'; }, 50);
+  });
 
 })();
