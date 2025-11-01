@@ -6,8 +6,10 @@
   const clearBtn = document.getElementById('clearBtn');
   const themeBtn = document.getElementById('themeBtn');
   const themeModal = document.getElementById('themeModal');
-  const themeOptions = document.querySelectorAll('.theme-option');
-  const status = document.getElementById('status');
+	const themeOptions = document.querySelectorAll('.theme-option');
+	const status = document.getElementById('status');
+	const focusBtn = document.getElementById('focusBtn');
+	const focusToast = document.getElementById('focusToast');
 	// Specific refs for core style toggles
 	const boldBtn = document.querySelector('.tool[data-cmd="bold"]');
 	const italicBtn = document.querySelector('.tool[data-cmd="italic"]');
@@ -17,7 +19,8 @@
 	const fontSize = document.getElementById('fontSize');
 	const colorPicker = document.getElementById('colorPicker');
   const STORAGE_KEY = 'retro-notes-content-v1';
-  const THEME_KEY = 'retro-notes-theme-v1';	// Ensure styleWithCSS so font color/sizing uses inline styles
+	const THEME_KEY = 'retro-notes-theme-v1';
+	const FOCUS_KEY = 'retro-notes-focus-v1';	// Ensure styleWithCSS so font color/sizing uses inline styles
 	document.execCommand('styleWithCSS', false, true);
 
 	// Pending formatting for Word-like behavior when caret is collapsed
@@ -203,6 +206,11 @@
 		colorPicker.addEventListener('change', applyColor);
 	}
 
+	// Focus mode toggle
+	if(focusBtn){
+		focusBtn.addEventListener('click', toggleFocusMode);
+	}
+
 	function updateStatus(txt){
 		status.textContent = txt;
 		if(txt==='saved'){
@@ -232,6 +240,55 @@
 	function closeThemeModalAnimated(){
 		themeModal.classList.remove('open');
 		themeModal.addEventListener('transitionend', () => { themeModal.style.display = 'none'; }, { once:true });
+	}
+
+	// Focus Mode helpers
+	function setFocusMode(enabled){
+		document.body.classList.toggle('focus-mode', enabled);
+		localStorage.setItem(FOCUS_KEY, enabled ? '1' : '0');
+		if(focusBtn){
+			const icon = focusBtn.querySelector('i');
+			if(icon){
+				icon.classList.toggle('fa-eye', enabled);
+				icon.classList.toggle('fa-eye-slash', !enabled);
+			}
+		}
+		if(enabled){
+			if(focusToast){
+				focusToast.style.display = 'block';
+				focusToast.classList.add('show');
+				setTimeout(()=>{ focusToast.classList.remove('show'); }, 1200);
+				setTimeout(()=>{ if(!focusToast.classList.contains('show')) focusToast.style.display = 'none'; }, 1500);
+			}
+			ensureCaretCentered();
+		}
+	}
+
+	function toggleFocusMode(){
+		setFocusMode(!document.body.classList.contains('focus-mode'));
+	}
+
+	function loadFocus(){
+		const saved = localStorage.getItem(FOCUS_KEY) === '1';
+		setFocusMode(saved);
+	}
+
+	function ensureCaretCentered(){
+		if(!document.body.classList.contains('focus-mode')) return;
+		const sel = window.getSelection();
+		if(!sel || sel.rangeCount === 0) return;
+		const range = sel.getRangeAt(0).cloneRange();
+		range.collapse(true);
+		const rects = range.getClientRects();
+		if(!rects || rects.length === 0) return;
+		const caretRect = rects[rects.length - 1];
+		const edRect = editor.getBoundingClientRect();
+		const caretYInEditor = (caretRect.top - edRect.top) + editor.scrollTop;
+		const target = editor.scrollTop + (editor.clientHeight / 2);
+		const delta = caretYInEditor - target;
+		if(Math.abs(delta) > 10){
+			editor.scrollTop += delta;
+		}
 	}
 
 
@@ -297,6 +354,7 @@
   // Load content and theme
   window.addEventListener('DOMContentLoaded', () => {
     loadTheme();
+		loadFocus();
     const saved = localStorage.getItem(STORAGE_KEY);
     if(saved) editor.innerHTML = saved;
     updateToolbarState();
@@ -305,9 +363,15 @@
 	// Keyboard shortcuts (Ctrl+B/I/U, Escape to close modal)
 	document.addEventListener('keydown', (e) => {
 		// Close modal with Escape
-		if(e.key === 'Escape' && themeModal.style.display === 'flex'){
-			closeThemeModalAnimated();
-			return;
+		if(e.key === 'Escape'){
+			if(themeModal.style.display === 'flex'){
+				closeThemeModalAnimated();
+				return;
+			}
+			if(document.body.classList.contains('focus-mode')){
+				setFocusMode(false);
+				return;
+			}
 		}
 		
 		if((e.ctrlKey || e.metaKey) && !e.shiftKey){
@@ -330,10 +394,22 @@
 				else { document.execCommand('underline'); }
 			}
 		}
+
+		// F9 toggles focus mode
+		if(e.key === 'F9'){
+			e.preventDefault();
+			toggleFocusMode();
+		}
 	});
 
 	// Keep focus inside editor when clicking tools
 	document.querySelectorAll('.tool').forEach(t=>t.addEventListener('mousedown', e=>e.preventDefault()));
+
+	// Center caret while typing in focus mode
+	editor.addEventListener('input', ensureCaretCentered);
+	document.addEventListener('selectionchange', () => {
+		if(document.activeElement === editor) setTimeout(ensureCaretCentered, 0);
+	});
 
 	// Flash status on save
 	const statusSpan = status; // span element already selected as #status

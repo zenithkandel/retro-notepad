@@ -28,6 +28,12 @@ A sleek, dark-themed retro notepad with a modern, animated UI and Word‑like fo
 - Autosave every 900ms + status flash; manual Save and Clear
 - Responsive and minimal by default; respects prefers‑reduced‑motion
 
+### New: Focus Mode (Typewriter)
+- Hide toolbar and status for a distraction‑free canvas
+- Typewriter centering keeps the caret around the vertical center as you write
+- Toggle via the toolbar button or F9; press Esc to exit
+- Persists across sessions
+
 ### Storage
 - Content autosaved to localStorage
 - Theme preference persisted
@@ -70,6 +76,7 @@ Modern browsers with:
 - `Ctrl+I` — Italic
 - `Ctrl+U` — Underline
 - `Escape` — Close theme selector
+- `F9` — Toggle Focus Mode
 
 ## 🎯 Future Enhancements
 

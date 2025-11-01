@@ -74,6 +74,7 @@
 					</div>
 				</div>
 				<div class="right">
+					<button class="tool" id="focusBtn" title="Focus mode (F9)"><i class="fa-solid fa-eye-slash"></i></button>
 					<button class="tool" id="themeBtn" title="Change theme"><i class="fa-solid fa-palette"></i></button>
 					<button class="tool" id="clearBtn" title="Clear"><i class="fa-solid fa-trash"></i></button>
 					<button class="tool" id="saveBtn" title="Save"><i class="fa-solid fa-floppy-disk"></i></button>
@@ -120,5 +121,8 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Focus Toast (created dynamically if missing) -->
+	<div id="focusToast" class="focus-toast" style="display:none;">Focus Mode — Press Esc to exit</div>
 	</body>
 </html>
